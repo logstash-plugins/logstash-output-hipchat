@@ -2,7 +2,7 @@
 require "logstash/namespace"
 require "logstash/outputs/http"
 
-# This output allows you to write events to [HipChat](https://www.hipchat.com/).
+# This output allows you to write events to https://www.hipchat.com/[HipChat].
 #
 class LogStash::Outputs::HipChat < LogStash::Outputs::Base
 
