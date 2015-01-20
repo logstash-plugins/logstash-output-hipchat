@@ -7,7 +7,6 @@ require "logstash/outputs/http"
 class LogStash::Outputs::HipChat < LogStash::Outputs::Base
 
   config_name "hipchat"
-  milestone 1
 
   # The HipChat authentication token.
   config :token, :validate => :string, :required => true
