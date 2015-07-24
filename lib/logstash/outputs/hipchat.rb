@@ -39,7 +39,7 @@ class LogStash::Outputs::HipChat < LogStash::Outputs::Base
 
     @agent = FTW::Agent.new
 
-    @url = "https://" + @host + "/v1/rooms/message?auth_token=" + @token
+    @url = "https://#{@host}/v1/rooms/message?auth_token=#{@token}"
     @content_type = "application/x-www-form-urlencoded"
   end # def register
 
