@@ -1,20 +1,21 @@
 # encoding: utf-8
+require "logstash/outputs/base"
 require "logstash/namespace"
-require "logstash/outputs/http"
 
 # This output allows you to write events to https://www.hipchat.com/[HipChat].
 #
+# Make sure your API token have the appropriate permissions and support
+# sending  messages.
 class LogStash::Outputs::HipChat < LogStash::Outputs::Base
-
   config_name "hipchat"
 
   # The HipChat authentication token.
   config :token, :validate => :string, :required => true
 
-  # The ID or name of the room.
+  # The ID or name of the room, support fieldref
   config :room_id, :validate => :string, :required => true
 
-  # The name the message will appear be sent from.
+  # The name the message will appear be sent from, you can use fieldref
   config :from, :validate => :string, :default => "logstash"
 
   # Whether or not this message should trigger a notification for people in the room.
@@ -22,61 +23,49 @@ class LogStash::Outputs::HipChat < LogStash::Outputs::Base
 
   # Background color for message.
   # HipChat currently supports one of "yellow", "red", "green", "purple",
-  # "gray", or "random". (default: yellow)
+  # "gray", or "random". (default: yellow), support fieldref
   config :color, :validate => :string, :default => "yellow"
 
   # Message format to send, event tokens are usable here.
   config :format, :validate => :string, :default => "%{message}"
 
+  # Specify `Message Format`
+  config :message_format, :validate => ["html", "text"], :default => "html"
+
   # HipChat host to use
-  config :host, :validate => :string, :default => "api.hipchat.com"
+  config :host, :validate => :string
 
   public
   def register
-    require "ftw"
-    require "uri"
+    require "hipchat"
+  end
 
-    @agent = FTW::Agent.new
+  def client
+    @client ||= if @host.nil? || @host.empty? 
+                  HipChat::Client.new(@token, :api_version => "v2")
+                else
+                  HipChat::Client.new(@token, :api_version => "v2", :server_url => server_url)
+                end
+  end
 
-    @url = "https://#{@host}/v1/rooms/message?auth_token=#{@token}"
-    @content_type = "application/x-www-form-urlencoded"
-  end # def register
+  def server_url
+    "https://#{@host}"
+  end
 
-  public
   def receive(event)
     return unless output?(event)
 
-    hipchat_data = Hash.new
-    hipchat_data['room_id'] = event.sprintf(@room_id)
-    hipchat_data['from']    = @from
-    hipchat_data['color']   = @color
-    hipchat_data['notify']  = @trigger_notify ? "1" : "0"
-    hipchat_data['message'] = event.sprintf(@format)
+    message = event.sprintf(@format)
+    from = event.sprintf(@from)
+    color = event.sprintf(@color)
+    room = event.sprintf(@room_id)
 
-    @logger.debug("HipChat data", :hipchat_data => hipchat_data)
+    @logger.debug("HipChat data", :from => from , :message => message, :notify => trigger_notify, :color => color, :message_format => @message_format) if @logger.debug?
 
     begin
-      request = @agent.post(@url)
-      request["Content-Type"] = @content_type
-      request.body = encode(hipchat_data)
-
-      response = @agent.execute(request)
-
-      # Consume body to let this connection be reused
-      rbody = ""
-      response.read_body { |c| rbody << c }
-      #puts rbody
+      client[room].send(from, message, :notify => trigger_notify, :color => color, :message_format => @message_format)
     rescue Exception => e
-      @logger.warn("Unhandled exception", :request => request, :response => response, :exception => e, :stacktrace => e.backtrace)
+      logger.warn("Unhandled exception", :exception => e, :stacktrace => e.backtrace)
     end
-  end # def receive
-
-  # shamelessly lifted this from the LogStash::Outputs::Http, I'd rather put this
-  # in a common place for both to use, but unsure where that place is or should be
-  def encode(hash)
-    return hash.collect do |key, value|
-      CGI.escape(key) + "=" + CGI.escape(value)
-    end.join("&")
-  end # def encode
-
-end # class LogStash::Outputs::HipChat
+  end
+end
