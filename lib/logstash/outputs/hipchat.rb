@@ -53,7 +53,7 @@ class LogStash::Outputs::HipChat < LogStash::Outputs::Base
   end
 
   def receive(event)
-    return unless output?(event)
+    
 
     message = event.sprintf(@format)
     from = event.sprintf(@from)
