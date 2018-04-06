@@ -1,5 +1,6 @@
 :plugin: hipchat
 :type: output
+:default_codec: plain
 
 ///////////////////////////////////////////
 START - GENERATED VARIABLES, DO NOT EDIT!
@@ -120,3 +121,5 @@ Whether or not this message should trigger a notification for people in the room
 
 [id="plugins-{type}s-{plugin}-common-options"]
 include::{include_path}/{type}.asciidoc[]
+
+:default_codec!:
