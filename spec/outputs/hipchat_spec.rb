@@ -43,7 +43,7 @@ describe LogStash::Outputs::HipChat do
       }
 
       let(:options) {
-        super.merge({
+        super().merge({
           "token" => "secret",
           "room_id" => "%{my_room}",
           "from" => "%{from_who}",
@@ -69,7 +69,7 @@ describe LogStash::Outputs::HipChat do
 
   context "specified host" do
     let(:host) { "local.dev" }
-    let(:options) { super.merge({ "host" => host }) }
+    let(:options) { super().merge({ "host" => host }) }
 
     before do
       expect(HipChat::Client).to receive(:new).with(token, :api_version => "v2", :server_url => "https://#{host}").and_return({ room_id => hipchat })
