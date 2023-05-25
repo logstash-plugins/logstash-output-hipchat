@@ -1,7 +1,7 @@
 # encoding: utf-8
+require_relative "../spec_helper"
 require "logstash/outputs/hipchat"
 require "logstash/event"
-require_relative "../spec_helper"
 
 describe LogStash::Outputs::HipChat do
   let(:token) { "secret" }
