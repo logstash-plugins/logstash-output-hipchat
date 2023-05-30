@@ -1,3 +1,6 @@
+## 4.0.6
+  - Change `token` config type to `password` to prevent leaking it in debug logs [#15](https://github.com/logstash-plugins/logstash-output-hipchat/pull/15)
+
 ## 4.0.5
   - Docs: Set the default_codec doc attribute.
 

@@ -40,7 +40,7 @@ This plugin supports the following configuration options plus the <<plugins-{typ
 | <<plugins-{type}s-{plugin}-host>> |<<string,string>>|No
 | <<plugins-{type}s-{plugin}-message_format>> |<<string,string>>, one of `["html", "text"]`|No
 | <<plugins-{type}s-{plugin}-room_id>> |<<string,string>>|Yes
-| <<plugins-{type}s-{plugin}-token>> |<<string,string>>|Yes
+| <<plugins-{type}s-{plugin}-token>> |<<password,password>>|Yes
 | <<plugins-{type}s-{plugin}-trigger_notify>> |<<boolean,boolean>>|No
 |=======================================================================
 
@@ -104,7 +104,7 @@ The ID or name of the room, support fieldref
 ===== `token` 
 
   * This is a required setting.
-  * Value type is <<string,string>>
+  * Value type is <<password,password>>
   * There is no default value for this setting.
 
 The HipChat authentication token.

@@ -10,7 +10,7 @@ class LogStash::Outputs::HipChat < LogStash::Outputs::Base
   config_name "hipchat"
 
   # The HipChat authentication token.
-  config :token, :validate => :string, :required => true
+  config :token, :validate => :password, :required => true
 
   # The ID or name of the room, support fieldref
   config :room_id, :validate => :string, :required => true
@@ -42,9 +42,9 @@ class LogStash::Outputs::HipChat < LogStash::Outputs::Base
 
   def client
     @client ||= if @host.nil? || @host.empty? 
-                  HipChat::Client.new(@token, :api_version => "v2")
+                  HipChat::Client.new(@token.value, :api_version => "v2")
                 else
-                  HipChat::Client.new(@token, :api_version => "v2", :server_url => server_url)
+                  HipChat::Client.new(@token.value, :api_version => "v2", :server_url => server_url)
                 end
   end
 

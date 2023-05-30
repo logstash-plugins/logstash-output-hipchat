@@ -1,7 +1,7 @@
 # encoding: utf-8
+require_relative "../spec_helper"
 require "logstash/outputs/hipchat"
 require "logstash/event"
-require_relative "../spec_helper"
 
 describe LogStash::Outputs::HipChat do
   let(:token) { "secret" }
@@ -76,5 +76,15 @@ describe LogStash::Outputs::HipChat do
     end
 
     include_examples "sending events"
+  end
+
+  describe "debugging `token`" do
+
+    it "should not show origin value" do
+      expect(output.logger).to receive(:debug).with('<password>')
+
+      output.register
+      output.logger.send(:debug, output.token.to_s)
+    end
   end
 end
